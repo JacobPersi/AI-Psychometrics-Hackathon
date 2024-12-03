@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,6 +12,10 @@
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
 
+    <!-- ZDiagrams: -->
+    <link href="_content/Z.Blazor.Diagrams/style.min.css" rel="stylesheet" />
+    <link href="_content/Z.Blazor.Diagrams/default.styles.min.css" rel="stylesheet" />
+
     <!-- BoxIcons: -->
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
 
@@ -21,17 +24,11 @@
     <script>
         tailwind.config = {
             theme: {
-                extend: {
-                    colors: {
-                        clifford: '#da373d',
-                    }
-                }
             }
         }
     </script>
 
 </head>
-
 <body>
     <div id="app">
         <svg class="loading-progress">
@@ -48,6 +45,9 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
-</body>
 
+    <!-- ZDiagrams: -->
+    <script src="_content/Z.Blazor.Diagrams/script.min.js"></script>
+
+</body>
 </html>

@@ -1,0 +1,33 @@
+﻿@using Blazor.Diagrams.Components.Renderers
+@using Blazor.Diagrams.Core.Geometry
+@using Blazor.Diagrams.Core.Models
+@using Blazor.Diagrams.Core.Models.Base
+
+<div class="w-12 h-12 bg-red-500 cursor-default">
+
+	<h5 class="card-title">System Node</h5>
+
+	@foreach (var port in Node.Ports)
+	{
+		<PortRenderer @key="port" Port="port" />
+	}
+
+</div>
+
+@code {
+
+	[Parameter] public SystemNodeModel Node { get; set; } = null!;
+
+	public class SystemNodeModel : NodeModel
+	{
+		public SystemNodeModel(Point? position = null) : base(position)
+		{
+			this.Locked = true;
+		}
+		public SystemNodeModel(string id, Point? position = null) : base(id, position)
+		{
+			
+					this.Locked = true;
+}
+	}
+}
