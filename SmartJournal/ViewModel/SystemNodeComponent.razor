@@ -15,19 +15,5 @@
 </div>
 
 @code {
-
 	[Parameter] public SystemNodeModel Node { get; set; } = null!;
-
-	public class SystemNodeModel : NodeModel
-	{
-		public SystemNodeModel(Point? position = null) : base(position)
-		{
-			this.Locked = true;
-		}
-		public SystemNodeModel(string id, Point? position = null) : base(id, position)
-		{
-			
-					this.Locked = true;
-}
-	}
 }

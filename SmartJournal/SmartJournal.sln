@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35004.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartJournal", "SmartJournal.csproj", "{D4FE728C-0476-4C22-8877-8C71061DEF16}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartJournal.Entities", "..\SmartJournal.Entities\SmartJournal.Entities.csproj", "{50B1F03F-5A3E-4E43-96B9-10FD4FE9370E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D4FE728C-0476-4C22-8877-8C71061DEF16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4FE728C-0476-4C22-8877-8C71061DEF16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4FE728C-0476-4C22-8877-8C71061DEF16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50B1F03F-5A3E-4E43-96B9-10FD4FE9370E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50B1F03F-5A3E-4E43-96B9-10FD4FE9370E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50B1F03F-5A3E-4E43-96B9-10FD4FE9370E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50B1F03F-5A3E-4E43-96B9-10FD4FE9370E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

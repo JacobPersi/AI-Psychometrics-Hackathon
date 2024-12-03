@@ -7,9 +7,6 @@
 @using Blazor.Diagrams.Core.Routers
 @using Blazor.Diagrams.Options
 
-@using SmartJournal.Models.ViewModel
-@using static SmartJournal.Models.ViewModel.SystemNode
-
 <div class="w-full h-full bg-white cursor-default">
 
 	<CascadingValue Value="Diagram" IsFixed="true">
@@ -24,6 +21,7 @@
 
 	private BlazorDiagram? Diagram { get; set; }
 
+	// Todo: Clean this up...
 	protected override void OnInitialized()
 	{
 		var opt = new BlazorDiagramOptions();
@@ -34,7 +32,7 @@
 
 		Diagram = new BlazorDiagram(opt);
 
-		Diagram.RegisterComponent<SystemNodeModel, SystemNode>();
+		Diagram.RegisterComponent<SystemNodeModel, SystemNodeComponent>();
 
 		var firstNode = Diagram.Nodes.Add(new SystemNodeModel(position: new Point(50, 50))
 		{
