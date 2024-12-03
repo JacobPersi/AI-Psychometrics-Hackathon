@@ -1,7 +1,7 @@
 ﻿using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 
-namespace SmartJournal.ViewModel;
+namespace SmartJournal.Layout.ViewModel;
 
 public class SystemNodeModel : NodeModel
 {

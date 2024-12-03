@@ -1,0 +1,42 @@
+﻿@page "/"
+@using SmartJournal.Entities
+
+@inject IIndexedDbFactory DbFactory
+
+<PageTitle>Home</PageTitle>
+
+<div> Hello </div>
+
+@code {
+
+	List<Workflow> Workflows { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		Workflows = await GetOrCreateWorkflowsAsync();
+		base.OnInitialized();
+	}
+
+	private async Task<List<Workflow>> GetOrCreateWorkflowsAsync()
+	{
+		using var dbContext = await this.DbFactory.Create<JournalDatabase>();
+		
+		var workflows = dbContext.Workflows.ToList();
+
+		if (workflows.Count == 0)
+		{
+			var seedWorkflow = new Workflow
+			{
+				Id = 1,
+				DisplayName = "Initial Test"
+			};
+
+			workflows.Add(seedWorkflow);
+			dbContext.Workflows.Add(seedWorkflow);
+
+			await dbContext.SaveChanges();
+		}
+		return workflows;
+	}
+}
+
