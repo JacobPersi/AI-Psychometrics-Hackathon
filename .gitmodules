@@ -1,0 +1,3 @@
+[submodule "mexa-hack"]
+	path = mexa-hack
+	url = https://github.com/neuromatch/mexa-hack.git
