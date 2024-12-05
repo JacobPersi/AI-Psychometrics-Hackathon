@@ -10,19 +10,21 @@ namespace ZenBytesWorkflow.Model;
 public class DecisionNode : BaseWorkflowNode
 {
 	public string Title { get; set; }
-	public string PrePrompt { get; set; }
-	public string TaskInstruction { get; set; }
+	public string Role { get; set; }
+	public string Task { get; set; }
 	public string Context { get; set; }
+	public string Examples { get; set; }
 
 	public DecisionNode() : base() { }
 
-	public DecisionNode(Point position, string title, string prePrompt, string taskInstruction, string context)
+	public DecisionNode(Point position, string title, string role, string task, string context, string examples)
 		: base(position)
 	{
 		Title = title;
-		PrePrompt = prePrompt;
-		TaskInstruction = taskInstruction;
+		Role = role;
+		Task = task;
 		Context = context;
+		Examples = examples;
 	}
 
 	public override NodeModel CreateNodeView(BlazorDiagram diagram)
@@ -31,8 +33,10 @@ public class DecisionNode : BaseWorkflowNode
 		{
 			NodeType = "True/False Decision",
 			Title = Title,
-			InstructionText = PrePrompt,
-			ExampleText = Context
+			Role = Role,
+			Task = Task,
+			Context = Context,
+			Examples = Examples
 		});
 	}
 
@@ -53,8 +57,8 @@ public class DecisionNode : BaseWorkflowNode
 						{
 							parts = new[]
 							{
-								new { text = PrePrompt },
-								new { text = TaskInstruction },
+								new { text = Role },
+								new { text = Task },
 								new { text = Context },
 								new { text = textInput.TextBody }
 							}

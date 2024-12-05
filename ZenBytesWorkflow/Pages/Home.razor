@@ -124,7 +124,7 @@
 					</div>
 
 					<div class="w-1/2 h-full border-dashed">
-						<div class="p-12">
+						<div class="p-4">
 
 							@if (SelectedPrompt is null)
 							{
@@ -133,20 +133,21 @@
 							}
 							else
 							{
-								<MudText class="pb-6">Editing Selected Prompt</MudText>
+								<MudText class="pb-3">Editing Selected Prompt</MudText>
 
 								<MudSelect @bind-Value="SelectedPrompt.NodeType" Variant="Variant.Outlined" Label="Prompt Type">
 									<MudSelectItem Value="@SelectedPrompt.NodeType">@SelectedPrompt.NodeType</MudSelectItem>
 								</MudSelect>
 
-								<MudTextField @bind-Value="@SelectedPrompt.Title" Label="Prompt Name" Class="pb-6 pt-6" />
+								<MudTextField @bind-Value="@SelectedPrompt.Title" Label="Prompt Name" Class="pb-3 pt-3" />
 
-								<MudText>System Prompt:</MudText>
-								<MudTextField T="string" Label="Item Text" Variant="Variant.Outlined" Text="@SelectedPrompt.InstructionText" Lines="3" />
+								<MudTextField T="string" Label="Role" Variant="Variant.Outlined" Text="@SelectedPrompt.Role" Lines="2" Class="pb-3" />
 
-								<MudText Class="pt-6">Prompt Examples:</MudText>
-								<MudTextField T="string" Label="Item Text" Variant="Variant.Outlined" Text="@SelectedPrompt.ExampleText" Lines="5" />
+								<MudTextField T="string" Label="Task" Variant="Variant.Outlined" Text="@SelectedPrompt.Task" Lines="3"  Class="pb-3" />
 
+								<MudTextField T="string" Label="Context" Variant="Variant.Outlined" Text="@SelectedPrompt.Context" Lines="3" Class="pb-3" />
+
+								<MudTextField T="string" Label="Examples" Variant="Variant.Outlined" Text="@SelectedPrompt.Examples" Lines="3" />
 							}
 
 						</div>
@@ -332,12 +333,20 @@ Ate a granola bar because I felt shaky. That’s all I’ve had today. I should 
 		var sleep_decisionNode = new DecisionNode(
 			new Point(256, 175),
 			title: "Does Text Reference Sleep?",
-			prePrompt: "You are an advanced language model designed to identify both explicit and implicit indicators of specific psychological, emotional, or behavioral constructs in text.",
-			taskInstruction: "Your task is to analyze and infer the presence of these constructs by recognizing direct mentions (explicit cues) and subtler, indirect expressions (implicit cues). When given text, determine whether it relates to the below construct based on its description and theoretical presentation:",
-			context: "Identify mentions of sleep-related activities, fatigue, or expressions implying sleep quality. Recognize both direct terms like 'sleep' or 'nap' and phrases or tones that suggest restlessness, fatigue, or difficulty relaxing."
-		);
+			role: "You are an advanced language model designed to identify both explicit and implicit indicators of specific psychological, emotional, or behavioral constructs in text.",
+			task: "Your task is to analyze and infer the presence of these constructs by recognizing direct mentions (explicit cues) and subtler, indirect expressions (implicit cues). When given text, determine whether it relates to the below construct based on its description and theoretical presentation:",
+			context: "Identify mentions of sleep-related activities, fatigue, or expressions implying sleep quality. Recognize both direct terms like 'sleep' or 'nap' and phrases or tones that suggest restlessness, fatigue, or difficulty relaxing.",
+			examples: String.Empty
+			);
 
-		var sleep_extractorNode = new ValueExtractorNode(new Point(124, 358), "Score Sleep Quality");
+		var sleep_extractorNode = new ValueExtractorNode(
+			new Point(124, 358), 
+			title: "Score Sleep Quality",
+			role: String.Empty, 
+			task: String.Empty, 
+			context: String.Empty, 
+			examples: String.Empty
+		);
 
 		var sleep_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
 
