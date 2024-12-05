@@ -3,12 +3,19 @@
 @using ZenBytesWorkflow.Model
 
 @inject IJSRuntime JS
+@inject IDialogService DialogService
+
+<style>
+.mud-ltr {
+	overflow:visible !important;
+}
+</style>
 
 <PageTitle>Home</PageTitle>
 
 <MudPaper Class="w-full h-full flex flex-col bg-zinc-100">
 
-	<MudStepper Class="flex-auto flex flex-col mx-32 ">
+	<MudStepper Class="flex-auto flex flex-col mx-32" ActiveIndexChanged="(index) => OnStepperIndexChanged(index)">
 		<!-- Step 1. -->
 
 		<MudStep Title="Data Upload" Class="h-full flex-auto">
@@ -52,7 +59,7 @@
 								<ChildContent>
 									<MudTextField @bind-Value="@textInput.DisplayName" Label="Item Name" Class="pb-2" />
 									<MudDatePicker Label="Item Date" @bind-Date="@textInput.DateTime" Class="py-2" />
-									<MudTextField T="string" Label="Item Text" Variant="Variant.Outlined" Text="@textInput.TextBody" Lines="5" />
+									<MudTextField T="string" Label="Item Text" Variant="Variant.Outlined" Text="@textInput.TextBody" Lines="3" />
 
 									<div class="mt-2 border rounded shadow-lg w-24 p-2 flex flex-row cursor-pointer" @onclick="() => DeleteTextInput(textInput)">
 										<MudIcon Icon="@Icons.Material.Filled.Add" Color="Color.Error" />
@@ -73,48 +80,46 @@
 		<MudStep Title="Workflow Configuration" Class="h-full flex-auto">
 			<MudPaper Class="h-full p-5 flex flex-col">
 
-				<h1>2. Workflow Configuration</h1>
-
-				<MudAlert Severity="Severity.Info" Class="mt-2">
-					Configure the processing workflow associated with the construct of interest. <br />
-					This will take the form of a series of sequential processing steps associated with different linguistic features.
-				</MudAlert>
-
-				<div class="flex">
-
-					<div class="w-128 mt-2">
-						<MudSelect Class="w-128" Label="Selected Workflow" T="Workflow" @bind-Value="CurrentWorkflow" @bind-Value:after="() => OnSelectedWorkflowChanged()">
-							@for (var i = 0; i < Workflows.Count; i++)
-							{
-								var index = (i + 1).ToString();
-								var workflow = Workflows[i];
-								<MudSelectItem Value="workflow"><strong>@index.</strong> @workflow.Title</MudSelectItem>
-							}
-						</MudSelect>
-					</div>
-
-					<div class="m-4 mb-1 ml-2 border rounded w-24 pl-4 p-2 flex flex-row cursor-pointer shadow">
-						<MudIcon Icon="@Icons.Material.Filled.CreateNewFolder" Color="Color.Info" />
-						<MudText Color="Color.Info" Class="ml-1">New</MudText>
-					</div>
-					<div class="m-4 mb-1 ml-0 border rounded w-24 pl-4 p-2 flex flex-row cursor-pointer shadow">
-						<MudIcon Icon="@Icons.Material.Filled.Save" Color="Color.Info" />
-						<MudText Color="Color.Info" Class="ml-1">Open</MudText>
-					</div>
-					<div class="m-4 mb-1 ml-0 border rounded w-24 p-2 pl-3 flex flex-row cursor-pointer shadow">
-						<MudIcon Icon="@Icons.Material.Filled.Save" Color="Color.Info" />
-						<MudText Color="Color.Info" Class="ml-1">Save</MudText>
-					</div>
-					<div class="m-4 mb-1 ml-0 border rounded w-32 p-2 pl-3 flex flex-row cursor-pointer shadow">
-						<MudIcon Icon="@Icons.Material.Filled.Add" Color="Color.Info" />
-						<MudText Color="Color.Info" Class="ml-1">Add Node</MudText>
-					</div>
-				</div>
-
 				<div class="flex flex-row h-full mt-2">
 					<div class="flex-auto h-full flex flex-col">
 
+						<h1>2. Workflow Configuration</h1>
 
+						<MudAlert Severity="Severity.Info" Class="mt-2">
+							Configure the processing workflow associated with the construct of interest. <br />
+							This will take the form of a series of sequential processing steps associated with different linguistic features.
+						</MudAlert>
+
+						<div class="flex">
+
+							<div class="w-128 mt-2">
+								<MudSelect Class="w-128" Label="Selected Workflow" T="Workflow" @bind-Value="CurrentWorkflow" @bind-Value:after="() => OnSelectedWorkflowChanged()">
+									@for (var i = 0; i < Workflows.Count; i++)
+									{
+										var index = (i + 1).ToString();
+										var workflow = Workflows[i];
+										<MudSelectItem Value="workflow"><strong>@index.</strong> @workflow.Title</MudSelectItem>
+									}
+								</MudSelect>
+							</div>
+
+							<div class="m-4 mb-1 ml-2 border rounded w-24 pl-4 p-2 flex flex-row cursor-pointer shadow">
+								<MudIcon Icon="@Icons.Material.Filled.CreateNewFolder" Color="Color.Info" />
+								<MudText Color="Color.Info" Class="ml-1">New</MudText>
+							</div>
+							<div class="m-4 mb-1 ml-0 border rounded w-24 pl-4 p-2 flex flex-row cursor-pointer shadow">
+								<MudIcon Icon="@Icons.Material.Filled.Save" Color="Color.Info" />
+								<MudText Color="Color.Info" Class="ml-1">Open</MudText>
+							</div>
+							<div class="m-4 mb-1 ml-0 border rounded w-24 p-2 pl-3 flex flex-row cursor-pointer shadow">
+								<MudIcon Icon="@Icons.Material.Filled.Save" Color="Color.Info" />
+								<MudText Color="Color.Info" Class="ml-1">Save</MudText>
+							</div>
+							<div class="m-4 mb-1 ml-0 border rounded w-32 p-2 pl-3 flex flex-row cursor-pointer shadow">
+								<MudIcon Icon="@Icons.Material.Filled.Add" Color="Color.Info" />
+								<MudText Color="Color.Info" Class="ml-1">Add Node</MudText>
+							</div>
+						</div>
 
 						<div class="flex-auto bg-white border shadow-lg">
 							<CascadingValue Value="Diagram" IsFixed="true">
@@ -124,7 +129,7 @@
 					</div>
 
 					<div class="w-1/2 h-full border-dashed">
-						<div class="p-4">
+						<div class="px-4">
 
 							@if (SelectedPrompt is null)
 							{
@@ -133,21 +138,21 @@
 							}
 							else
 							{
-								<MudText class="pb-3">Editing Selected Prompt</MudText>
+								<MudText class="pb-2">Editing Selected Prompt</MudText>
 
-								<MudSelect @bind-Value="SelectedPrompt.NodeType" Variant="Variant.Outlined" Label="Prompt Type">
+								<MudTextField @bind-Value="@SelectedPrompt.Title" Label="Prompt Name" Class="pb-2" />
+
+								<MudSelect @bind-Value="SelectedPrompt.NodeType" Variant="Variant.Outlined" Label="Prompt Type" Class="pb-2">
 									<MudSelectItem Value="@SelectedPrompt.NodeType">@SelectedPrompt.NodeType</MudSelectItem>
 								</MudSelect>
 
-								<MudTextField @bind-Value="@SelectedPrompt.Title" Label="Prompt Name" Class="pb-3 pt-3" />
+								<MudTextField T="string" Label="Role" Variant="Variant.Outlined" Text="@SelectedPrompt.Role" Lines="3" Class="pb-2" />
 
-								<MudTextField T="string" Label="Role" Variant="Variant.Outlined" Text="@SelectedPrompt.Role" Lines="2" Class="pb-3" />
+								<MudTextField T="string" Label="Task" Variant="Variant.Outlined" Text="@SelectedPrompt.Task" Lines="3" Class="pb-2" />
 
-								<MudTextField T="string" Label="Task" Variant="Variant.Outlined" Text="@SelectedPrompt.Task" Lines="3"  Class="pb-3" />
+								<MudTextField T="string" Label="Context" Variant="Variant.Outlined" Text="@SelectedPrompt.Context" Lines="10" Class="pb-2" />
 
-								<MudTextField T="string" Label="Context" Variant="Variant.Outlined" Text="@SelectedPrompt.Context" Lines="3" Class="pb-3" />
-
-								<MudTextField T="string" Label="Examples" Variant="Variant.Outlined" Text="@SelectedPrompt.Examples" Lines="3" />
+								<MudTextField T="string" Label="Examples" Variant="Variant.Outlined" Text="@SelectedPrompt.Examples" Lines="6" />
 							}
 
 						</div>
@@ -158,11 +163,15 @@
 		</MudStep>
 		<!-- Step 3. -->
 		<MudStep Title="Data Analysis" Class="h-full flex-auto">
-			<MudPaper Class="h-full px-64">
+			<MudPaper Class="h-full px-32">
 
-				<MudText Class="pt-12">Calculated Sleep Scores:</MudText>
+				<div class="@(_chartLoaded == false ? "invisible" : "visible")">
 
-				<MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Class="border-2 shadow mt-12 pl-4" ChartOptions="ChartOptions" />
+					<MudText Class="pt-12">Calculated Sleep Scores:</MudText>
+
+					<MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Class="mt-12 ml-16 border-2 shadow p-12" ChartOptions="ChartOptions" Width="80%" />
+
+				</div>
 
 			</MudPaper>
 		</MudStep>
@@ -180,6 +189,7 @@
 
 @code {
 
+	private bool _chartLoaded = false;
 	private string stringValue { get; set; }
 	private BlazorDiagram? Diagram { get; set; }
 	private WorkflowNodeViewModel? SelectedPrompt { get; set; }
@@ -194,8 +204,8 @@
 
 	private ChartOptions ChartOptions = new ChartOptions()
 		{
-			YAxisTicks = 10,
-			LineStrokeWidth = 10
+			YAxisTicks = 5,
+			LineStrokeWidth = 5
 		};
 
 	// Todo: Clean this up...
@@ -204,8 +214,6 @@
 		InitializeDiagram();
 		LoadDummyInputs();
 		LoadDummyWorkflow();
-
-		//await CurentWorkflow.ExecuteWorkflow(TextInputs.First());
 	}
 
 	private void InitializeDiagram()
@@ -244,9 +252,7 @@
 				DateTime = DateTime.Parse("12/01/2024"),
 				DisplayName = "Journal Entry",
 				TextBody = @"Started the day with some energy for once. Went to the gym—felt kind of good to move, even though I didn’t stay long. Grabbed a smoothie after, strawberry-banana. Not bad.
-
 Spent the afternoon on campus trying to catch up on readings. The library was packed, and I couldn’t focus. Ended up people-watching instead.
-
 Dinner was tacos with Emma. She kept asking about my thesis, and I changed the subject. Came home and binged a few episodes of Parks and Rec. That show feels like a hug."
 			},
 	new()
@@ -254,9 +260,7 @@ Dinner was tacos with Emma. She kept asking about my thesis, and I changed the s
 				DateTime = DateTime.Parse("12/02/2024"),
 				DisplayName = "Journal Entry",
 				TextBody = @"Didn’t sleep well. I kept thinking about whether I’m even cut out for this program. Dragged myself to class and sat in the back. Barely took notes—just kind of zoned out.
-
 Tried to be productive at the café, but I forgot my charger, so that was a bust. Got a croissant, though, and it was flaky perfection.
-
 Came home and stared at my planner for an hour. There’s so much to do, but I couldn’t even start. Dinner was cereal because I didn’t feel like cooking."
 			},
 	new()
@@ -264,9 +268,7 @@ Came home and stared at my planner for an hour. There’s so much to do, but I c
 				DateTime = DateTime.Parse("12/03/2024"),
 				DisplayName = "Journal Entry",
 				TextBody = @"Snoozed my alarm three times. Finally got up when I realized I had a meeting. Went in sweats because I couldn’t deal with finding something decent to wear.
-
 The meeting was fine, I guess. Group work is so awkward—everyone just kind of talks over each other. Came home and lay on the couch for a while scrolling my phone.
-
 Forgot to eat lunch. Ordered pizza for dinner, but it wasn’t even that good. Spent the evening trying to work on my thesis, but I just kept rewriting the same paragraph."
 			},
 	new()
@@ -274,9 +276,7 @@ Forgot to eat lunch. Ordered pizza for dinner, but it wasn’t even that good. S
 				DateTime = DateTime.Parse("12/04/2024"),
 				DisplayName = "Journal Entry ",
 				TextBody = @"Woke up feeling off. Like, not sad exactly, just heavy. Stayed in bed for a while and finally got up because I couldn’t stand staring at the ceiling anymore.
-
 Class was boring. I doodled in my notebook instead of paying attention. Lunch was instant noodles, even though I bought groceries yesterday. Didn’t leave the apartment after that.
-
 Tried watching a movie, but I couldn’t focus. Ended up lying on the couch, thinking about how behind I am. Emma texted asking if I wanted to grab dinner, but I told her I was busy. I wasn’t."
 			},
 	new()
@@ -284,9 +284,7 @@ Tried watching a movie, but I couldn’t focus. Ended up lying on the couch, thi
 				DateTime = DateTime.Parse("12/05/2024"),
 				DisplayName = "Journal Entry",
 				TextBody = @"Stayed up too late last night. Woke up with that gross, fuzzy-brain feeling. Didn’t even bother going to class. What’s the point if I’m not going to listen anyway?
-
 Stayed in bed most of the day, scrolling TikTok. Saw a video about someone graduating, and it made me feel weird. Like, happy for them, but also… I don’t know. Stuck?
-
 Ate a granola bar because I felt shaky. That’s all I’ve had today. I should probably eat something real, but nothing sounds good. Left my laptop open for hours and didn’t type a single word."
 			}
 		]);
@@ -294,102 +292,174 @@ Ate a granola bar because I felt shaky. That’s all I’ve had today. I should 
 
 	private void LoadDummyWorkflow()
 	{
-		// Concentration Workflow:
-		var concentrationWorkflow = new Workflow()
-			{
-				Title = "Degree of Focus Analysis"
-			};
-
-		var concentration_startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
-		var concentration_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
-
-		concentrationWorkflow.Nodes.Add(concentration_startNode);
-		concentrationWorkflow.Nodes.Add(concentration_endNode);
-
-		Workflows.Add(concentrationWorkflow);
-
-		// Appetite Workflow:
-		var appetiteWorkflow = new Workflow()
-			{
-				Title = "Food & Diet Analysis"
-			};
-
-		var appetite_startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
-		var appetite_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
-
-		appetiteWorkflow.Nodes.Add(appetite_startNode);
-		appetiteWorkflow.Nodes.Add(appetite_endNode);
-
-		Workflows.Add(appetiteWorkflow);
-
 		// Sleep Workflow:
-		var sleepWorkflow = new Workflow()
+		var clinicalWorkflow = new Workflow()
 			{
-				Title = "Sleep Quality Analysis"
+				Title = "Clinical Risk Factor Analysis"
 			};
 
-		var sleep_startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
+		var clinical_startNode = new SystemNode(new Point(324, 35), SystemComponentType.StartNode);
 
-		var sleep_decisionNode = new DecisionNode(
-			new Point(256, 175),
-			title: "Does Text Reference Sleep?",
-			role: "You are an advanced language model designed to identify both explicit and implicit indicators of specific psychological, emotional, or behavioral constructs in text.",
-			task: "Your task is to analyze and infer the presence of these constructs by recognizing direct mentions (explicit cues) and subtler, indirect expressions (implicit cues). When given text, determine whether it relates to the below construct based on its description and theoretical presentation:",
-			context: "Identify mentions of sleep-related activities, fatigue, or expressions implying sleep quality. Recognize both direct terms like 'sleep' or 'nap' and phrases or tones that suggest restlessness, fatigue, or difficulty relaxing.",
-			examples: String.Empty
-			);
+		var clinical_focusExtractorNode = new ValueExtractorNode(
+			new Point(306, 92),
+			title: "Concentration",
+			role: @"You are an advanced language model designed to analyze text and evaluate focus and concentration levels based on explicit and implicit indicators, using a weighted system to determine the significance of terms.",
+			task: @"Your task is to evaluate text for references to focus and concentration issues, assigning a score between 0 (no relevant indicators) and 1–5 to reflect varying degrees of focus. Use the provided framework to weigh the importance of terms and calculate scores based on frequency and severity of indicators.",
+			context: @"Scoring Framework:
+- Mild Terms (weight 1): Represent minor distractions or occasional lapses in focus.
+Examples: 'daydreaming,' 'lost track of time,' 'a bit distracted.'
+- Moderate Terms (weight 2): Noticeable struggles with attention or focus.
+Examples: 'zoning out,' 'couldn’t stay on task,' 'forgot what I was doing.'
+- Severe Terms (weight 3): Reflect significant focus or concentration difficulties.
+Examples: 'mind feels foggy,' 'couldn’t think straight,' 'thoughts keep jumping,' 'forgot important tasks.'
 
-		var sleep_extractorNode = new ValueExtractorNode(
-			new Point(124, 358), 
-			title: "Score Sleep Quality",
-			role: String.Empty, 
-			task: String.Empty, 
-			context: String.Empty, 
-			examples: String.Empty
+Calculation Example:
+- Entry: 'I kept zoning out (weight 2) and forgot what I was doing (weight 2).'
+Total Weight: 2 + 2 = 4 (Moderate Focus: Score 3)
+- Entry: 'My mind feels foggy (weight 3), I couldn’t think straight (weight 3), and thoughts kept jumping (weight 3).'
+Total Weight: 3 + 3 + 3 = 9 (Low Focus: Score 1)",
+
+			examples: @"Input: 'I was zoning out all day and couldn’t stay on task.'
+Output: Score: 3 (Moderate Focus)
+Input: 'I was focused and got everything done without distractions.'
+Output: Score: 5 (High Focus)
+Input: 'My mind was foggy, and I forgot two meetings because I couldn’t concentrate.'
+Output: Score: 1 (Very Low Focus)"
 		);
 
-		var sleep_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
+		var clinical_energyExtractorNode = new ValueExtractorNode(
+			new Point(305, 195),
+			title: "Mental Energy",
+			role: @"You are an advanced language model designed to analyze text and evaluate mental energy levels based on explicit and implicit indicators, using a weighted system to calculate scores that reflect varying degrees of mental energy.",
+			task: @"Your task is to evaluate text for references to mental energy, assigning a score between 0 (no relevant indicators) and 1–5 to reflect different energy levels. Use the provided framework to weigh the significance of terms and calculate scores based on frequency and intensity of indicators.",
+			context: @"Scoring Framework:
+- Low Energy Terms (weight 1): Represent mild sluggishness or slight dips in energy.
+Examples: 'a bit tired,' 'felt slow,' 'needed a little push.'
+- Moderate Energy Terms (weight 2): Noticeable fatigue or lack of motivation.
+Examples: 'exhausted,' 'mentally drained,' 'everything felt harder.'
+- Severe Energy Depletion (weight 3): Reflects significant fatigue or extreme energy deficits.
+Examples: 'couldn’t bring myself to move,' 'felt heavy all day,' 'drained physically and mentally.'
 
-		sleepWorkflow.Nodes.Add(sleep_startNode);
-		sleepWorkflow.Nodes.Add(sleep_decisionNode);
-		sleepWorkflow.Nodes.Add(sleep_extractorNode);
-		sleepWorkflow.Nodes.Add(sleep_endNode);
+Calculation Example:
+- Entry: 'I felt a bit tired (weight 1), and everything felt harder than usual (weight 2).'
+Total Weight: 1 + 2 = 3 (Moderate Energy: Score 3)
+- Entry: 'I was mentally drained (weight 2), couldn’t bring myself to move (weight 3), and felt heavy (weight 3).'
+Total Weight: 2 + 3 + 3 = 8 (Low Energy: Score 1)",
 
-		sleepWorkflow.Links.Add(new WorkflowLink(sleep_startNode, sleep_decisionNode));
-		sleepWorkflow.Links.Add(new WorkflowLink(sleep_decisionNode, sleep_endNode));
-		sleepWorkflow.Links.Add(new WorkflowLink(sleep_decisionNode, sleep_extractorNode));
-		sleepWorkflow.Links.Add(new WorkflowLink(sleep_extractorNode, sleep_endNode));
+			examples: @"Input: 'I’ve been really exhausted and couldn’t bring myself to do anything today.'
+Output: Score: 2 (Moderate Energy)
+Input: 'I feel awake and motivated to take on the day.'
+Output: Score: 5 (High Energy)
+Input: 'I couldn’t get started, felt drained, and everything took extra effort.'
+Output: Score: 1 (Very Low Energy)"
+		);
 
-		Workflows.Add(sleepWorkflow);
+		var clinical_sleepExtractorNode = new ValueExtractorNode(
+			new Point(302, 296),
+			title: "Sleep Quality",
+			role: @"You are an advanced language model designed to analyze text and score different aspects of sleep quality based on explicit and implicit indicators, using a weighted system to evaluate the significance of terms.",
+			task: @"Your task is to evaluate text for references to sleep quality, assigning a score between 0 (no relevant indicators) and 1–5 to reflect varying degrees of quality. Use the provided theory to weigh the importance of terms and calculate scores based on frequency and severity of indicators.",
+			context: @"Scoring Framework:
+- Mild Terms (weight 1): Represent light symptoms or minor issues.
+Examples: 'tired,' 'a bit restless,' 'slightly awake.'
+- Moderate Terms (weight 2): Noticeable sleep-related discomfort.
+Examples: 'exhausted,' 'couldn't fall asleep,' 'kept waking up.'
+- Severe Terms (weight 3): Reflect serious issues impacting sleep.
+Examples: 'fatigued,' 'insomnia,' 'restless all night.'
 
-		// Energy Workfow:
-		var energyWorkflow = new Workflow()
-			{
-				Title = "Energy Level Analysis"
-			};
+Calculation Example:
+- Entry: 'I feel tired (weight 1), and I kept waking up all night (weight 2).'
+Total Weight: 1 + 2 = 3 (Moderate Quality: Score 3)
+- Entry: 'I had insomnia (weight 3), felt fatigued (weight 3), and couldn’t sleep at all (weight 3).'
+Total Weight: 3 + 3 + 3 = 9 (Low Quality: Score 1)",
 
-		var energy_startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
-		var energy_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
+			examples: @"Input: 'I’ve been really tired and couldn’t fall asleep last night.'
+Output: Score: 3 (Moderate Quality)
+Input: 'I slept great and feel refreshed.'
+Output: Score: 5 (High Quality)
+Input: 'Insomnia has been keeping me awake for days, I feel drained.'
+Output: Score: 1 (Very Low Quality)"
+		);
 
-		energyWorkflow.Nodes.Add(energy_startNode);
-		energyWorkflow.Nodes.Add(energy_endNode);
+		var clinical_dietExtractorNode = new ValueExtractorNode(
+			new Point(299, 396),
+			title: "Diet & Appetite",
+			role: @"You are an advanced language model designed to analyze text and score different aspects of diet and appetite based on explicit and implicit indicators, using a weighted system to evaluate the significance of terms.",
+			task: @"Your task is to evaluate text for references to diet and appetite, assigning a score between 0 (no relevant indicators) and 1–5 to reflect varying degrees of dietary balance and appetite health. Use the provided theory to weigh the importance of terms and calculate scores based on frequency and severity of indicators.",
+			context: @"Scoring Framework:
+- Mild Terms (weight 1): Represent minor appetite changes or occasional dietary irregularities.
+Examples: 'ate,' 'snacked,' 'felt full,' 'hungry but managed to eat.'
+- Moderate Terms (weight 2): Noticeable irregularities or moderate appetite changes.
+Examples: 'skipped breakfast,' 'snacked all day,' 'felt cravings,' 'ate late meal,' 'forgot to eat.'
+- Severe Terms (weight 3): Reflect significant dietary disruptions or appetite issues.
+Examples: 'kept eating out of boredom,' 'eating to fill a void,' 'didn’t feel like eating,' 'couldn’t stomach food,' 'no appetite,' 'overeating throughout the day.'
 
-		Workflows.Add(energyWorkflow);
+Calculation Example:
+- Entry: 'I snacked throughout the day (weight 2) and skipped breakfast (weight 2).'
+Total Weight: 2 + 2 = 4 (Moderate Balance: Score 3)
+- Entry: 'I had no appetite (weight 3), couldn’t stomach food (weight 3), and missed meals all day (weight 3).'
+Total Weight: 3 + 3 + 3 = 9 (Very Low Balance: Score 1)",
 
+			examples: @"Input: 'I felt hungry and ate a small meal.'
+Output: Score: 4 (High Balance)
+Input: 'I skipped breakfast and snacked on junk food all day.'
+Output: Score: 3 (Moderate Balance)
+Input: 'I kept eating to fill a void and didn’t feel like eating anything healthy.'
+Output: Score: 1 (Very Low Balance)"
+		);
 
-		// Activity Workflow:
-		var activityWorkflow = new Workflow()
-			{
-				Title = "Goal-Directed Behaviour Analysis"
-			};
+		var clinical_activityExtractorNode = new ValueExtractorNode(
+			new Point(295, 497),
+			title: "Activity Engagement",
+			role: @"You are an advanced language model designed to analyze text and score engagement with physical activities based on explicit and implicit indicators, using a weighted system to evaluate the significance of terms.",
+			task: @"Your task is to evaluate text for references to physical activity or inactivity, assigning a score between 0 (no relevant indicators) and 1–5 to reflect varying levels of engagement. Use the provided framework to weigh the importance of terms and calculate scores based on frequency and severity of indicators.",
+			context: @"Scoring Framework:
+- Mild Terms (weight 1): Indicate minimal or low activity engagement.
+Examples: 'walked a little,' 'some movement,' 'light exercise.'
+- Moderate Terms (weight 2): Suggest moderate levels of engagement or effort.
+Examples: 'went for a walk,' 'did yoga,' 'active for a bit.'
+- High Terms (weight 3): Reflect significant effort or high activity engagement.
+Examples: 'ran several miles,' 'intense workout,' 'spent hours at the gym.'
 
-		var activity_startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
-		var activity_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
+Indicators of inactivity reduce the overall score:
+- Mild Indicators (weight -1): Light inactivity or low energy descriptions.
+Examples: 'felt a bit lazy,' 'didn’t do much today.'
+- Moderate Indicators (weight -2): Noticeable lack of activity.
+Examples: 'stayed home all day,' 'too tired to move.'
+- Severe Indicators (weight -3): Reflect complete inactivity or avoidance.
+Examples: 'couldn’t get out of bed,' 'avoided all movement,' 'no energy to move.'
 
-		activityWorkflow.Nodes.Add(activity_startNode);
-		activityWorkflow.Nodes.Add(activity_endNode);
+Calculation Example:
+- Entry: 'I walked a little (weight 1) and did yoga (weight 2), but I stayed home most of the day (weight -2).'
+Total Weight: 1 + 2 - 2 = 1 (Low Engagement: Score 2)
+- Entry: 'Ran 5 miles (weight 3), went to the gym (weight 3), and stayed active (weight 2).'
+Total Weight: 3 + 3 + 2 = 8 (High Engagement: Score 5)",
+			examples: @"Input: 'I walked around the block and did some light yoga.'
+Output: Score: 3 (Moderate Engagement)
+Input: 'I stayed home all day and didn’t feel like doing anything.'
+Output: Score: 1 (Very Low Engagement)
+Input: 'I ran 10k, went to the gym, and kept moving all day.'
+Output: Score: 5 (High Engagement)"
+		);
 
-		Workflows.Add(activityWorkflow);
+		var clinical_endNode = new SystemNode(new Point(315, 585), SystemComponentType.EndNode);
+
+		clinicalWorkflow.Nodes.Add(clinical_startNode);
+		clinicalWorkflow.Nodes.Add(clinical_focusExtractorNode);
+		clinicalWorkflow.Nodes.Add(clinical_energyExtractorNode);
+		clinicalWorkflow.Nodes.Add(clinical_sleepExtractorNode);
+		clinicalWorkflow.Nodes.Add(clinical_dietExtractorNode);
+		clinicalWorkflow.Nodes.Add(clinical_activityExtractorNode);
+		clinicalWorkflow.Nodes.Add(clinical_endNode);
+
+		clinicalWorkflow.Links.Add(new WorkflowLink(clinical_startNode, clinical_focusExtractorNode));
+		clinicalWorkflow.Links.Add(new WorkflowLink(clinical_focusExtractorNode, clinical_energyExtractorNode));
+		clinicalWorkflow.Links.Add(new WorkflowLink(clinical_energyExtractorNode, clinical_sleepExtractorNode));
+		clinicalWorkflow.Links.Add(new WorkflowLink(clinical_sleepExtractorNode, clinical_dietExtractorNode));
+		clinicalWorkflow.Links.Add(new WorkflowLink(clinical_dietExtractorNode, clinical_activityExtractorNode));
+		clinicalWorkflow.Links.Add(new WorkflowLink(clinical_activityExtractorNode, clinical_endNode));
+
+		Workflows.Add(clinicalWorkflow);
 
 		try
 		{
@@ -403,9 +473,8 @@ Ate a granola bar because I felt shaky. That’s all I’ve had today. I should 
 
 			//loadedWorkflow.Build(Diagram);
 
-			sleepWorkflow.BuildDiagram(Diagram);
-
-			CurrentWorkflow = sleepWorkflow;
+			clinicalWorkflow.BuildDiagram(Diagram);
+			CurrentWorkflow = clinicalWorkflow;
 
 		}
 		catch (Exception ex)
@@ -435,6 +504,62 @@ Ate a granola bar because I felt shaky. That’s all I’ve had today. I should 
 		Diagram.Nodes.Clear();
 		Diagram.Links.Clear();
 		CurrentWorkflow.BuildDiagram(Diagram);
+	}
+
+	private async Task OnStepperIndexChanged(int index)
+	{
+		if (index == 2)
+		{
+			await OpenDialogAsync();
+		}
+	}
+
+	private Task OpenDialogAsync()
+	{
+		var task = CurrentWorkflow.ExecuteWorkflow(TextInputs);
+
+		task.ContinueWith(previousTask =>
+		{
+			var scoreCards = previousTask.Result;
+
+
+			var chartValues = new List<ChartSeries>();
+
+			foreach (var card in scoreCards)
+			{
+				var id = card.id;
+				var scores = card.card;
+
+				var name = (CurrentWorkflow.Nodes.Where(node => node.Id == id).SingleOrDefault() as ValueExtractorNode).Title;
+				var scoreDouble = new double[]
+				{
+					(double) scores.Input1,
+					(double) scores.Input2,
+					(double) scores.Input3,
+					(double) scores.Input4,
+					(double) scores.Input5,
+				};
+
+				chartValues.Add(new ChartSeries()
+					{
+						Name = name,
+						Data = scoreDouble
+					});
+			}
+			Series = chartValues;
+			XAxisLabels = TextInputs.Select(item => item.DateTime.Value.ToString("dd/MM/yyyy")).ToArray();
+
+			_chartLoaded = true;
+			StateHasChanged();
+		});
+
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+		var parameters = new DialogParameters<PendingDialog>
+		{
+			{ x => x.ExecutionTask, task }
+		};
+
+		return DialogService.ShowAsync<PendingDialog>("Executing Workflow", parameters, options);
 	}
 
 	private async Task HandleFileSelection(ChangeEventArgs e)

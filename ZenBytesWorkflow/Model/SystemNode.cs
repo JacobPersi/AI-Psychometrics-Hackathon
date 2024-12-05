@@ -25,7 +25,8 @@ public class SystemNode : BaseWorkflowNode
 		});
 	}
 
-    public override async Task ExecuteAsync(TextInput textInput)
+    public override async Task<ScoreCard?> ExecuteAsync(List<TextInput> inputs)
     {
+		return null;
     }
 }

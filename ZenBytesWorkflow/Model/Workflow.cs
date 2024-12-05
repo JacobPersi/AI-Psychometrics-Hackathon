@@ -43,13 +43,21 @@ public class Workflow
 		}
 	}
 
-	public async Task ExecuteWorkflow(TextInput input)
+	public async Task<List<(int id, ScoreCard card)>> ExecuteWorkflow(List<TextInput> inputs)
 	{
+		var scoreCards = new List<(int id, ScoreCard card)>();
+
 		foreach (var workflowNode in Nodes)
 		{
-			await workflowNode.ExecuteAsync(input);
-			await Task.Delay(1000);
+			var scoreCard = await workflowNode.ExecuteAsync(inputs);
+
+			if (scoreCard != null)
+				scoreCards.Add((workflowNode.Id, scoreCard));
+
+			await Task.Delay(500);
 		}
+
+		return scoreCards;
 	}
 
 	public void ExportToJson(string filePath)

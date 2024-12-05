@@ -1,9 +1,10 @@
-﻿<div class="bg-zinc-100 rounded-lg cursor-pointer border shadow-inner px-4 py-2  border-zinc-300">
+﻿<div class="bg-zinc-100 rounded-lg cursor-pointer border shadow-inner px-4 py-2  border-zinc-300 hover:bg-orange-100 hover:border-orange-300">
 
-	<span class="font-medium">Type: </span><span>@Node.NodeType</span>
-	<br/>
-	<span class="font-medium">Prompt: </span><span>@Node.Title</span>
+	<span class="font-medium">@Node.Title</span>
 	<br />
+	<span>@Node.NodeType</span>
+	<br />
+
 	@foreach (var port in Node.Ports)
 	{
 		<PortRenderer @key="port" Port="port" />

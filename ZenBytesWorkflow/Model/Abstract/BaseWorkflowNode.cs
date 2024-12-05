@@ -20,6 +20,6 @@ public abstract class BaseWorkflowNode
 
 	public abstract NodeModel CreateNodeView(BlazorDiagram diagram);
 
-    public abstract Task ExecuteAsync(TextInput textInput);
+    public abstract Task<ScoreCard?> ExecuteAsync(List<TextInput> textInput);
 
 }
