@@ -24,4 +24,8 @@ public class SystemNode : BaseWorkflowNode
 			Type = _nodeType
 		});
 	}
+
+    public override async Task ExecuteAsync(TextInput textInput)
+    {
+    }
 }

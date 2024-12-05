@@ -25,4 +25,8 @@ public class ValueExtractorNode : BaseWorkflowNode
 			Title = Title
 		});
 	}
+
+    public override async Task ExecuteAsync(TextInput textInput)
+    {
+    }
 }

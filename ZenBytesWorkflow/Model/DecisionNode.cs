@@ -2,6 +2,7 @@
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using RestSharp;
+using System.Text.Json;
 using ZenBytesWorkflow.Diagram;
 using ZenBytesWorkflow.Util;
 
@@ -9,17 +10,19 @@ namespace ZenBytesWorkflow.Model;
 public class DecisionNode : BaseWorkflowNode
 {
 	public string Title { get; set; }
-	public string InstructionText { get; set; }
-	public string ExampleText { get; set; }
+	public string PrePrompt { get; set; }
+	public string TaskInstruction { get; set; }
+	public string Context { get; set; }
 
 	public DecisionNode() : base() { }
 
-	public DecisionNode(Point position, string title, string instructionText, string exampleText)
+	public DecisionNode(Point position, string title, string prePrompt, string taskInstruction, string context)
 		: base(position)
 	{
 		Title = title;
-		InstructionText = instructionText;
-		ExampleText = exampleText;
+		PrePrompt = prePrompt;
+		TaskInstruction = taskInstruction;
+		Context = context;
 	}
 
 	public override NodeModel CreateNodeView(BlazorDiagram diagram)
@@ -28,11 +31,12 @@ public class DecisionNode : BaseWorkflowNode
 		{
 			NodeType = "True/False Decision",
 			Title = Title,
-			InstructionText = InstructionText,
-			ExampleText = ExampleText
+			InstructionText = PrePrompt,
+			ExampleText = Context
 		});
 	}
-	public async Task<string> GenerateContentFromGemini()
+
+	public override async Task ExecuteAsync(TextInput textInput)
 	{
 		try
 		{
@@ -49,18 +53,45 @@ public class DecisionNode : BaseWorkflowNode
 						{
 							parts = new[]
 							{
-								new { text = InstructionText }
+								new { text = PrePrompt },
+								new { text = TaskInstruction },
+								new { text = Context },
+								new { text = textInput.TextBody }
 							}
 						}
 					},
-					generationConfig = new { response_mime_type = "application/json" }
+					generationConfig = new
+					{
+						response_mime_type = "application/json",
+						response_schema = new
+						{
+							type = "BOOLEAN",
+						}
+					}
 				});
 
 			var response = await client.PostAsync(request);
 
 			if (response.IsSuccessful && response.Content != null)
 			{
-				return response.Content;
+				/*
+				JsonSerializer.Deserialize<TextInput>(content);
+
+				dynamic jsonObject = JsonConvert.DeserializeObject(response.Content);
+
+				bool hasSleepRef = jsonObject?.Count > 0; // Check if any results exist
+
+				if (hasSleepRef)
+				{
+					// Text references sleep
+					// Perform actions for "True" branch
+				}
+				else
+				{
+					// Text doesn't reference sleep
+					// Perform actions for "False" branch
+				}
+				*/
 			}
 			else
 			{
@@ -69,7 +100,6 @@ public class DecisionNode : BaseWorkflowNode
 		}
 		catch (Exception ex)
 		{
-			// Handle or log exceptions as necessary
 			Console.WriteLine($"Error: {ex.Message}");
 			throw;
 		}

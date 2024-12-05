@@ -169,6 +169,7 @@
 	private WorkflowNodeViewModel? SelectedPrompt { get; set; }
 	private List<TextInput> TextInputs { get; set; } = new();
 	private Workflow CurentWorkflow { get; set; }
+	private List<Workflow> Workflows { get; set; }
 	private List<ChartSeries> Series = new List<ChartSeries>()
 	{
 		new ChartSeries() { Name = "Sleep Quality", Data = new double[] { 7, 6, 6, 5, 9} },
@@ -188,12 +189,7 @@
 		LoadDummyInputs();
 		LoadDummyWorkflow();
 
-		var node = CurentWorkflow.Nodes.Where(item => item.Id == 2).FirstOrDefault();
-
-		if (node != null)
-		{
-			var a = await ((DecisionNode)node).GenerateContentFromGemini();
-		}
+		await CurentWorkflow.ExecuteWorkflow(TextInputs.First());
 	}
 
 	private void InitializeDiagram()
@@ -282,27 +278,82 @@ Ate a granola bar because I felt shaky. That’s all I’ve had today. I should 
 
 	private void LoadDummyWorkflow()
 	{
-		var workflow = new Workflow();
+		// Concentration Workflow: 
+		var concentrationWorkflow = new Workflow()
+		{
+			Title = "Degree of Focus Analysis"
+		};
 
-		var startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
-		var decisionNode = new DecisionNode(
+		var concentration_startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
+		var concentration_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
+
+		Workflows.Add(concentrationWorkflow);
+
+		// Appetite Workflow:
+		var appetiteWorkflow = new Workflow()
+		{
+			Title = "Food & Diet Analysis"
+		};
+
+		var appetite_startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
+		var appetite_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
+
+		Workflows.Add(appetiteWorkflow);
+
+		// Sleep Workflow:
+		var sleepWorkflow = new Workflow()
+		{
+			Title = "Sleep Quality Analysis"
+		};
+
+		var sleep_startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
+		
+		var sleep_decisionNode = new DecisionNode(
 			new Point(256, 175),
-			"Does Text Reference Sleep?",
-			"You're a translation agent converting natural language into machine-readable values. Determine if the text sample references sleep. Respond with 'True' or 'False'.",
-			"> Today was okay, I felt a little tired though.\nFalse\n\n> I slept horribly last night\nTrue\n\n"
+			title: "Does Text Reference Sleep?",
+			prePrompt: "You are an advanced language model designed to identify both explicit and implicit indicators of specific psychological, emotional, or behavioral constructs in text.",
+			taskInstruction: "Your task is to analyze and infer the presence of these constructs by recognizing direct mentions (explicit cues) and subtler, indirect expressions (implicit cues). When given text, determine whether it relates to the below construct based on its description and theoretical presentation:",
+			context: "Identify mentions of sleep-related activities, fatigue, or expressions implying sleep quality. Recognize both direct terms like 'sleep' or 'nap' and phrases or tones that suggest restlessness, fatigue, or difficulty relaxing."
 		);
-		var extractorNode = new ValueExtractorNode(new Point(124, 358), "Score Sleep Quality");
-		var endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
+		
+		var sleep_extractorNode = new ValueExtractorNode(new Point(124, 358), "Score Sleep Quality");
+		
+		var sleep_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
+		
+		sleepWorkflow.Nodes.Add(sleep_startNode);
+		sleepWorkflow.Nodes.Add(sleep_decisionNode);
+		sleepWorkflow.Nodes.Add(sleep_extractorNode);
+		sleepWorkflow.Nodes.Add(sleep_endNode);
+		
+		sleepWorkflow.Links.Add(new WorkflowLink(sleep_startNode, sleep_decisionNode));
+		sleepWorkflow.Links.Add(new WorkflowLink(sleep_decisionNode, sleep_endNode));
+		sleepWorkflow.Links.Add(new WorkflowLink(sleep_decisionNode, sleep_extractorNode));
+		sleepWorkflow.Links.Add(new WorkflowLink(sleep_extractorNode, sleep_endNode));
 
-		workflow.Nodes.Add(startNode);
-		workflow.Nodes.Add(decisionNode);
-		workflow.Nodes.Add(extractorNode);
-		workflow.Nodes.Add(endNode);
+		Workflows.Add(sleepWorkflow);
 
-		workflow.Links.Add(new WorkflowLink(startNode, decisionNode));
-		workflow.Links.Add(new WorkflowLink(decisionNode, endNode));
-		workflow.Links.Add(new WorkflowLink(decisionNode, extractorNode));
-		workflow.Links.Add(new WorkflowLink(extractorNode, endNode));
+		// Energy Workfow:
+		var energyWorkflow = new Workflow()
+		{
+			Title = "Energy Level Analysis"
+		};
+
+		var energy_startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
+		var energy_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
+
+		Workflows.Add(energyWorkflow);
+
+
+		// Activity Workflow:
+		var activityWorkflow = new Workflow()
+		{
+			Title = "Goal-Directed Behaviour Analysis"
+		};
+
+		var activity_startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
+		var activity_endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
+
+		Workflows.Add(activityWorkflow);
 
 		try
 		{
@@ -316,9 +367,9 @@ Ate a granola bar because I felt shaky. That’s all I’ve had today. I should 
 
 			//loadedWorkflow.Build(Diagram);
 
-			workflow.Build(Diagram);
+			sleepWorkflow.Build(Diagram);
 
-			CurentWorkflow = workflow;
+			CurentWorkflow = sleepWorkflow;
 
 		}
 		catch (Exception ex)
@@ -374,11 +425,5 @@ Ate a granola bar because I felt shaky. That’s all I’ve had today. I should 
 		TextInputs.Remove(textInput);
 	}
 
-	private class TextInput
-	{
-		public DateTime? DateTime { get; set; }
-		public string DisplayName { get; set; }
-		public string TextBody { get; set; }
-		public bool Expanded { get; set; } = false;
-	}
+
 }

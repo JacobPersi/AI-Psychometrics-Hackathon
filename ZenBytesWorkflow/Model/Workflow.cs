@@ -1,4 +1,5 @@
 ﻿using Blazor.Diagrams;
+using Blazor.Diagrams.Core;
 using Blazor.Diagrams.Core.Anchors;
 using Blazor.Diagrams.Core.Models;
 using Blazor.Diagrams.Core.Routers;
@@ -8,6 +9,7 @@ namespace ZenBytesWorkflow.Model;
 
 public class Workflow
 {
+	public string Title { get; set; }
 	public List<BaseWorkflowNode> Nodes { get; set; } = new List<BaseWorkflowNode>();
 	public List<WorkflowLink> Links { get; set; } = new List<WorkflowLink>();
 
@@ -38,6 +40,15 @@ public class Workflow
 
 			link.TargetMarker = LinkMarker.Arrow;
 			link.Router = new OrthogonalRouter();
+		}
+	}
+
+	public async Task ExecuteWorkflow(TextInput input)
+	{
+		foreach (var workflowNode in Nodes)
+		{
+			await workflowNode.ExecuteAsync(input);
+			await Task.Delay(1000);
 		}
 	}
 
