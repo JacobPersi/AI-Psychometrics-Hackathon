@@ -1,0 +1,15 @@
+﻿<div class="bg-zinc-100 rounded-lg cursor-pointer border shadow-inner px-4 py-2  border-zinc-300">
+
+	<span class="font-medium">Type: </span><span>@Node.NodeType</span>
+	<br/>
+	<span class="font-medium">Prompt: </span><span>@Node.Title</span>
+	<br />
+	@foreach (var port in Node.Ports)
+	{
+		<PortRenderer @key="port" Port="port" />
+	}
+</div>
+
+@code {
+	[Parameter] public WorkflowNodeViewModel Node { get; set; } = null!;
+}

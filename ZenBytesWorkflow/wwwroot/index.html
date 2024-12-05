@@ -1,37 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmartJournal</title>
+    <title>ZenBytesWorkflow</title>
     <base href="/" />
     <link rel="stylesheet" href="css/app.css" />
     <!-- If you add any scoped CSS files, uncomment the following to load them
-    <link href="SmartJournal.styles.css" rel="stylesheet" /> -->
+    <link href="ZenBytesWorkflow.styles.css" rel="stylesheet" /> -->
     <link href="manifest.webmanifest" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
 
-    <!-- IndexedDB: -->
-    <script src="_content/Blazor.IndexedDB/indexedDb.Blazor.js"></script>
+    <!-- TailWinds: -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- MudBlazor: -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    
     <!-- ZDiagrams: -->
     <link href="_content/Z.Blazor.Diagrams/style.min.css" rel="stylesheet" />
     <link href="_content/Z.Blazor.Diagrams/default.styles.min.css" rel="stylesheet" />
-
-    <!-- BoxIcons: -->
-    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
-
-    <!-- TailWinds: -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-            }
-        }
-    </script>
-
 </head>
+
 <body>
     <div id="app">
         <svg class="loading-progress">
@@ -46,11 +39,15 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-    <script src="_framework/blazor.webassembly.js"></script>
-    <script>navigator.serviceWorker.register('service-worker.js');</script>
+
+    <!-- MudBlazor: -->
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
     <!-- ZDiagrams: -->
     <script src="_content/Z.Blazor.Diagrams/script.min.js"></script>
 
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
 </body>
+
 </html>

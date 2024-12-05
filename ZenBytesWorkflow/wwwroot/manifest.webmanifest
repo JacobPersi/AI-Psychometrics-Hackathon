@@ -1,6 +1,6 @@
 {
-  "name": "SmartJournal",
-  "short_name": "SmartJournal",
+  "name": "ZenBytesWorkflow",
+  "short_name": "ZenBytesWorkflow",
   "id": "./",
   "start_url": "./",
   "display": "standalone",

@@ -1,0 +1,376 @@
+﻿@page "/"
+@using System.Text.Json
+@using ZenBytesWorkflow.Model
+
+@inject IJSRuntime JS
+
+<PageTitle>Home</PageTitle>
+
+<MudPaper Class="w-full h-full flex flex-col bg-zinc-100">
+
+	<MudStepper Class="flex-auto flex flex-col mx-32 ">
+		<!-- Step 1. -->
+
+		<MudStep Title="Data Upload" Class="h-full flex-auto">
+			<MudPaper Class="h-full p-5">
+
+				<h1>1. Data Upload</h1>
+
+				<MudAlert Severity="Severity.Info" Class="mt-2">
+					Upload the <b>textual data</b> you'd like to process. <br />
+					This can include anything from journal entries to social media posts or even biometric data. <br /> <b>Any text-based information that sheds light on mental wellbeing can be processed</b>.
+				</MudAlert>
+
+				<div class="flex">
+					<div class="mt-3 border rounded w-20 p-2 flex flex-row cursor-pointer shadow-lg" @onclick="NewTextInput">
+						<MudIcon Icon="@Icons.Material.Filled.Add" Color="Color.Info" Class="" />
+						<MudText Color="Color.Info" Class="ml-1">Add</MudText>
+					</div>
+					<div class="ml-3 mt-3 pl-3 border rounded w-28 p-2 flex flex-row cursor-pointer shadow-lg" @onclick="UploadTextInputs">
+						<MudIcon Icon="@Icons.Material.Filled.Upload" Color="Color.Info" Class="" />
+						<MudText Color="Color.Info" Class="ml-1">Upload</MudText>
+					</div>
+				</div>
+
+				<div class="mt-3">
+					<MudExpansionPanels>
+						@for (var i = 0; i < TextInputs.Count; i++)
+						{
+							var index = (i + 1).ToString();
+							var textInput = TextInputs[i];
+							<MudExpansionPanel Text="@textInput.DisplayName" @bind-Expanded="@textInput.Expanded" IsInitiallyExpanded="false">
+								<TitleContent>
+									@if (textInput.Expanded)
+									{
+										<MudText><strong>Editing Item @index:</strong></MudText>
+									}
+									else
+									{
+										<MudText><strong>Item @index:</strong> @textInput.DisplayName @(textInput.DateTime != null ? " - " + textInput.DateTime.Value.ToString("MMMM dd, yyyy") : "")</MudText>
+									}
+								</TitleContent>
+								<ChildContent>
+									<MudTextField @bind-Value="@textInput.DisplayName" Label="Item Name" Class="pb-2" />
+									<MudDatePicker Label="Item Date" @bind-Date="@textInput.DateTime" Class="py-2" />
+									<MudTextField T="string" Label="Item Text" Variant="Variant.Outlined" Text="@textInput.TextBody" Lines="5" />
+
+									<div class="mt-2 border rounded shadow-lg w-24 p-2 flex flex-row cursor-pointer" @onclick="() => DeleteTextInput(textInput)">
+										<MudIcon Icon="@Icons.Material.Filled.Add" Color="Color.Error" Class="" />
+										<MudText Color="Color.Error" Class="ml-1">Delete</MudText>
+									</div>
+
+								</ChildContent>
+							</MudExpansionPanel>
+						}
+					</MudExpansionPanels>
+
+				</div>
+
+			</MudPaper>
+		</MudStep>
+
+		<!-- Step 2. -->
+		<MudStep Title="Workflow Configuration" Class="h-full flex-auto">
+			<MudPaper Class="h-full p-5 flex flex-col">
+
+				<h1>2. Workflow Configuration</h1>
+
+				<MudAlert Severity="Severity.Info" Class="mt-2">
+					Configure the processing workflow associated with the construct of interest. <br />
+					This will take the form of a series of sequential processing steps associated with different linguistic features.
+				</MudAlert>
+
+				<div class="flex">
+					<div class="mt-3 border rounded w-24 pl-4 p-2 flex flex-row cursor-pointer shadow">
+						<MudIcon Icon="@Icons.Material.Filled.CreateNewFolder" Color="Color.Info" Class="" />
+						<MudText Color="Color.Info" Class="ml-1">New</MudText>
+					</div>
+					<div class="mt-3 border rounded w-24 pl-4 p-2 flex flex-row cursor-pointer shadow ml-4">
+						<MudIcon Icon="@Icons.Material.Filled.Save" Color="Color.Info" Class="" />
+						<MudText Color="Color.Info" Class="ml-1">Open</MudText>
+					</div>
+					<div class="mt-3 border rounded w-24 p-2 pl-3 flex flex-row cursor-pointer shadow ml-4">
+						<MudIcon Icon="@Icons.Material.Filled.Save" Color="Color.Info" Class="" />
+						<MudText Color="Color.Info" Class="ml-1">Save</MudText>
+					</div>
+					<div class="mt-3 border rounded w-32 p-2 pl-3 flex flex-row cursor-pointer shadow ml-4">
+						<MudIcon Icon="@Icons.Material.Filled.Add" Color="Color.Info" Class="" />
+						<MudText Color="Color.Info" Class="ml-1">Add Node</MudText>
+					</div>
+				</div>
+
+				<div class="flex flex-row h-full mt-2">
+					<div class="flex-auto h-full flex flex-col">
+
+						<div class="flex-auto bg-white border shadow-lg">
+							<CascadingValue Value="Diagram" IsFixed="true">
+								<DiagramCanvas Class="cursor-default"></DiagramCanvas>
+							</CascadingValue>
+						</div>
+					</div>
+
+					<div class="w-1/2 h-full border-dashed">
+						<div class="p-12">
+
+							@if (SelectedPrompt is null)
+							{
+								<MudText class="pt-6">Please select a prompt to configure it!</MudText>
+								<span></span>
+							}
+							else
+							{
+								<MudText class="pb-6">Editing Selected Prompt</MudText>
+
+								<MudSelect @bind-Value="SelectedPrompt.NodeType" Variant="Variant.Outlined" Label="Prompt Type">
+									<MudSelectItem Value="@SelectedPrompt.NodeType">@SelectedPrompt.NodeType</MudSelectItem>
+								</MudSelect>
+
+								<MudTextField @bind-Value="@SelectedPrompt.Title" Label="Prompt Name" Class="pb-6 pt-6" />
+
+								<MudText>System Prompt:</MudText>
+								<MudTextField T="string" Label="Item Text" Variant="Variant.Outlined" Text="@SelectedPrompt.InstructionText" Lines="3" />
+
+								<MudText Class="pt-6">Prompt Examples:</MudText>
+								<MudTextField T="string" Label="Item Text" Variant="Variant.Outlined" Text="@SelectedPrompt.ExampleText" Lines="5" />
+
+							}
+
+						</div>
+					</div>
+				</div>
+			</MudPaper>
+
+		</MudStep>
+		<!-- Step 3. -->
+		<MudStep Title="Data Analysis" Class="h-full flex-auto">
+			<MudPaper Class="h-full px-64">
+
+				<MudText Class="pt-12">Calculated Sleep Scores:</MudText>
+
+				<MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Class="border-2 shadow mt-12 pl-4" ChartOptions="ChartOptions" />
+
+			</MudPaper>
+		</MudStep>
+
+	</MudStepper>
+
+</MudPaper>
+
+<input id="fileInput" type="file" style="display:none" @onchange="HandleFileSelection" />
+<script>
+	function StartFileUpload() {
+		document.getElementById('fileInput').click();
+	}
+</script>
+
+@code {
+
+	private BlazorDiagram? Diagram { get; set; }
+	private WorkflowNodeViewModel? SelectedPrompt { get; set; }
+
+	private List<TextInput> TextInputs { get; set; } = new();
+
+	private List<ChartSeries> Series = new List<ChartSeries>()
+	{
+		new ChartSeries() { Name = "Sleep Quality", Data = new double[] { 7, 6, 6, 5, 9} },
+	};
+	private string[] XAxisLabels = { "Tue", "Wed", "Thu", "Fri", "Sat" };
+
+	private ChartOptions ChartOptions = new ChartOptions()
+		{
+			YAxisTicks = 10,
+			LineStrokeWidth = 10
+		};
+
+	// Todo: Clean this up...
+	protected override async Task OnInitializedAsync()
+	{
+		InitializeDiagram();
+		LoadDummyInputs();
+		LoadDummyWorkflow();
+	}
+
+	private void InitializeDiagram()
+	{
+		var opt = new BlazorDiagramOptions();
+		opt.AllowPanning = false;
+		opt.Zoom.Enabled = false;
+		opt.AllowMultiSelection = false;
+		opt.Virtualization.Enabled = false;
+
+		Diagram = new BlazorDiagram(opt);
+
+		Diagram.RegisterComponent<SystemNodeViewModel, SystemComponent>();
+		Diagram.RegisterComponent<WorkflowNodeViewModel, PromptComponent>();
+
+		Diagram.SelectionChanged += Diagram_OnSelectionChanged;
+
+	}
+
+
+	private void Diagram_OnSelectionChanged(SelectableModel model)
+	{
+		if (model is WorkflowNodeViewModel prompt)
+			SelectedPrompt = prompt;
+
+		StateHasChanged();
+	}
+
+
+	private void LoadDummyInputs()
+	{
+		TextInputs.AddRange([
+			new()
+			{
+				Expanded = true,
+				DateTime = DateTime.Parse("12/01/2024"),
+				DisplayName = "Journal Entry",
+				TextBody = @"Started the day with some energy for once. Went to the gym—felt kind of good to move, even though I didn’t stay long. Grabbed a smoothie after, strawberry-banana. Not bad.
+
+Spent the afternoon on campus trying to catch up on readings. The library was packed, and I couldn’t focus. Ended up people-watching instead.
+
+Dinner was tacos with Emma. She kept asking about my thesis, and I changed the subject. Came home and binged a few episodes of Parks and Rec. That show feels like a hug."
+			},
+	new()
+			{
+				DateTime = DateTime.Parse("12/02/2024"),
+				DisplayName = "Journal Entry",
+				TextBody = @"Didn’t sleep well. I kept thinking about whether I’m even cut out for this program. Dragged myself to class and sat in the back. Barely took notes—just kind of zoned out.
+
+Tried to be productive at the café, but I forgot my charger, so that was a bust. Got a croissant, though, and it was flaky perfection.
+
+Came home and stared at my planner for an hour. There’s so much to do, but I couldn’t even start. Dinner was cereal because I didn’t feel like cooking."
+			},
+	new()
+			{
+				DateTime = DateTime.Parse("12/03/2024"),
+				DisplayName = "Journal Entry",
+				TextBody = @"Snoozed my alarm three times. Finally got up when I realized I had a meeting. Went in sweats because I couldn’t deal with finding something decent to wear.
+
+The meeting was fine, I guess. Group work is so awkward—everyone just kind of talks over each other. Came home and lay on the couch for a while scrolling my phone.
+
+Forgot to eat lunch. Ordered pizza for dinner, but it wasn’t even that good. Spent the evening trying to work on my thesis, but I just kept rewriting the same paragraph."
+			},
+	new()
+			{
+				DateTime = DateTime.Parse("12/04/2024"),
+				DisplayName = "Journal Entry ",
+				TextBody = @"Woke up feeling off. Like, not sad exactly, just heavy. Stayed in bed for a while and finally got up because I couldn’t stand staring at the ceiling anymore.
+
+Class was boring. I doodled in my notebook instead of paying attention. Lunch was instant noodles, even though I bought groceries yesterday. Didn’t leave the apartment after that.
+
+Tried watching a movie, but I couldn’t focus. Ended up lying on the couch, thinking about how behind I am. Emma texted asking if I wanted to grab dinner, but I told her I was busy. I wasn’t."
+			},
+	new()
+			{
+				DateTime = DateTime.Parse("12/05/2024"),
+				DisplayName = "Journal Entry",
+				TextBody = @"Stayed up too late last night. Woke up with that gross, fuzzy-brain feeling. Didn’t even bother going to class. What’s the point if I’m not going to listen anyway?
+
+Stayed in bed most of the day, scrolling TikTok. Saw a video about someone graduating, and it made me feel weird. Like, happy for them, but also… I don’t know. Stuck?
+
+Ate a granola bar because I felt shaky. That’s all I’ve had today. I should probably eat something real, but nothing sounds good. Left my laptop open for hours and didn’t type a single word."
+			}
+		]);
+	}
+
+	private void LoadDummyWorkflow()
+	{
+		var workflow = new Workflow();
+
+		var startNode = new SystemNode(new Point(323, 50), SystemComponentType.StartNode);
+		var decisionNode = new DecisionNode(
+			new Point(256, 175),
+			"Does Text Reference Sleep?",
+			"You're a translation agent converting natural language into machine-readable values. Determine if the text sample references sleep. Respond with 'True' or 'False'.",
+			"> Today was okay, I felt a little tired though.\nFalse\n\n> I slept horribly last night\nTrue\n\n"
+		);
+		var extractorNode = new ValueExtractorNode(new Point(124, 358), "Score Sleep Quality");
+		var endNode = new SystemNode(new Point(323, 570), SystemComponentType.EndNode);
+
+		workflow.Nodes.Add(startNode);
+		workflow.Nodes.Add(decisionNode);
+		workflow.Nodes.Add(extractorNode);
+		workflow.Nodes.Add(endNode);
+
+		workflow.Links.Add(new WorkflowLink(startNode, decisionNode));
+		workflow.Links.Add(new WorkflowLink(decisionNode, endNode));
+		workflow.Links.Add(new WorkflowLink(decisionNode, extractorNode));
+		workflow.Links.Add(new WorkflowLink(extractorNode, endNode));
+
+		try
+		{
+
+			// Export workflow to JSON
+			//string filePath = "workflow.json";
+			//workflow.ExportToJson(filePath);
+
+			// Load workflow from JSON
+			//var loadedWorkflow = Workflow.LoadFromJson(filePath);
+
+			//loadedWorkflow.Build(Diagram);
+
+			workflow.Build(Diagram);
+
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine("Err {eex}");
+		}
+	}
+
+	private void NewTextInput()
+	{
+		TextInputs.Add(new()
+			{
+				DisplayName = "New Entry",
+				DateTime = DateTime.Now,
+				TextBody = "",
+			});
+		StateHasChanged();
+	}
+
+	private async Task UploadTextInputs()
+	{
+		await JS.InvokeVoidAsync("StartFileUpload");
+	}
+
+	private async Task HandleFileSelection(ChangeEventArgs e)
+	{
+		// Get the selected files
+		var files = e.Value as IReadOnlyList<IBrowserFile>;
+		if (files != null && files.Count > 0)
+		{
+			foreach (var file in files)
+			{
+				using var stream = file.OpenReadStream();
+				using var reader = new StreamReader(stream);
+				var content = await reader.ReadToEndAsync();
+
+				try
+				{
+					var loadedTextInput = JsonSerializer.Deserialize<TextInput>(content);
+					TextInputs.Add(loadedTextInput);
+
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine($"Err: {ex}");
+				}
+			}
+		}
+	}
+
+	private void DeleteTextInput(TextInput textInput)
+	{
+		TextInputs.Remove(textInput);
+	}
+
+	private class TextInput
+	{
+		public DateTime? DateTime { get; set; }
+		public string DisplayName { get; set; }
+		public string TextBody { get; set; }
+		public bool Expanded { get; set; } = false;
+	}
+}

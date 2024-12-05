@@ -1,0 +1,21 @@
+﻿@if (Node.Type == SystemComponentType.StartNode)
+{
+	<div class="cursor-default bg-green-200 rounded border border-green-300 text-zinc-600 font-medium px-2 py-1 w-32 text-center shadow">
+		Start
+	</div>
+}
+else if (Node.Type == SystemComponentType.EndNode)
+{
+	<div class="cursor-default bg-red-200 rounded border border-red-300 text-zinc-600 font-medium px-2 py-1 w-32 text-center shadow">
+		End
+	</div>
+}
+
+@foreach (var port in Node.Ports)
+{
+	<PortRenderer @key="port" Port="port" />
+}
+
+@code {
+	[Parameter] public SystemNodeViewModel Node { get; set; } = null!;
+}

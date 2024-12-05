@@ -1,8 +1,7 @@
-using Blazor.IndexedDB;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using SmartJournal;
-using SmartJournal.Database;
+using MudBlazor.Services;
+using ZenBytesWorkflow;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -10,6 +9,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-builder.Services.AddSingleton<IIndexedDbFactory, IndexedDbFactory>();
+builder.Services.AddMudServices();
 
 await builder.Build().RunAsync();
