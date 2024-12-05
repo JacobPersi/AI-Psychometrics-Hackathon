@@ -5,7 +5,7 @@ using System.IO;
 public static class ApiKey
 {
 	private static string _cachedApiKey;
-	private static string _filePath = "";
+	private static string _filePath = "api_key.txt";
 
 	public static string Value
 	{

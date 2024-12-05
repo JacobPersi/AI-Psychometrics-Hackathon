@@ -167,9 +167,8 @@
 
 	private BlazorDiagram? Diagram { get; set; }
 	private WorkflowNodeViewModel? SelectedPrompt { get; set; }
-
 	private List<TextInput> TextInputs { get; set; } = new();
-
+	private Workflow CurentWorkflow { get; set; }
 	private List<ChartSeries> Series = new List<ChartSeries>()
 	{
 		new ChartSeries() { Name = "Sleep Quality", Data = new double[] { 7, 6, 6, 5, 9} },
@@ -188,6 +187,13 @@
 		InitializeDiagram();
 		LoadDummyInputs();
 		LoadDummyWorkflow();
+
+		var node = CurentWorkflow.Nodes.Where(item => item.Id == 2).FirstOrDefault();
+
+		if (node != null)
+		{
+			var a = await ((DecisionNode)node).GenerateContentFromGemini();
+		}
 	}
 
 	private void InitializeDiagram()
@@ -311,6 +317,8 @@ Ate a granola bar because I felt shaky. That’s all I’ve had today. I should 
 			//loadedWorkflow.Build(Diagram);
 
 			workflow.Build(Diagram);
+
+			CurentWorkflow = workflow;
 
 		}
 		catch (Exception ex)

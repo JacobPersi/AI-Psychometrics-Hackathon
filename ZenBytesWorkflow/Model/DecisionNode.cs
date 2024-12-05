@@ -3,6 +3,7 @@ using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using RestSharp;
 using ZenBytesWorkflow.Diagram;
+using ZenBytesWorkflow.Util;
 
 namespace ZenBytesWorkflow.Model;
 public class DecisionNode : BaseWorkflowNode
@@ -31,14 +32,14 @@ public class DecisionNode : BaseWorkflowNode
 			ExampleText = ExampleText
 		});
 	}
-	public async Task<string> GenerateContentFromGemini(string apiKey, string prompt)
+	public async Task<string> GenerateContentFromGemini()
 	{
 		try
 		{
 			var client = new RestClient("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent");
 
 			var request = new RestRequest()
-				.AddQueryParameter("key", apiKey)
+				.AddQueryParameter("key", ApiKey.Value)
 				.AddHeader("Content-Type", "application/json")
 				.AddJsonBody(new
 				{
@@ -48,7 +49,7 @@ public class DecisionNode : BaseWorkflowNode
 						{
 							parts = new[]
 							{
-								new { text = prompt }
+								new { text = InstructionText }
 							}
 						}
 					},
