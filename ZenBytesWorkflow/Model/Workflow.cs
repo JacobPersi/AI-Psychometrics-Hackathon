@@ -15,7 +15,7 @@ public class Workflow
 
 	public Workflow() { }
 
-	public void Build(BlazorDiagram diagram)
+	public void BuildDiagram(BlazorDiagram diagram)
 	{
 		var nodeMapping = new Dictionary<int, NodeModel>();
 
